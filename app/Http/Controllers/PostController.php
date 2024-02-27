@@ -13,11 +13,12 @@ class PostController extends Controller
      */
     public function index()
     {
-        $post = Post::all();
+        $post = Post::orderBy('id', 'DESC')
+        ->get();
         if(empty($post)){
             return response()->empty();
         }
-        return $post;
+        return response()->success($post, 'Data Fetched Successfully');
     }
 
     /**
@@ -42,7 +43,7 @@ class PostController extends Controller
         if(empty($postId)){
             return response()->empty();
         }
-        return $postId;
+        return response()->success($postId, 'Data Fetched Successfully');
     }
 
     /**
@@ -51,10 +52,11 @@ class PostController extends Controller
     public function update(PostRequest $request, string $id)
     {
         $postId = Post::find($id);
+        $update = $postId->update($request->validated());
         if(empty($postId)){
             return response()->empty();
         }
-        if(!$postId){
+        if(!$update){
             return response()->failed('Failed to Update Data');
         }else {
             return response()->success($postId, 'Data Updated Successfully');
@@ -67,10 +69,11 @@ class PostController extends Controller
     public function destroy(string $id)
     {
         $postId = Post::find($id);
-        if(empty($postId)){
+        $del = $postId->delete();
+        if(empty($del)){
             return response()->empty();
         }
-        if(!$postId){
+        if(!$del){
             return response()->failed('Failed to Delete Post');
         }else {
             return response()->json([
